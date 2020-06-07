@@ -23,6 +23,19 @@ Example Use-Case(s):
 
 - `example/` folder
 
+Usage
+-----
+
+- Your Excel file should have the extension `*.xslm` (Excel with Macro support enabled).
+- Import `*Utils.bas` modules and `API.bas` module into your Excel file.  
+- Import references (as developer?, Tools-menu) for:
+
+  - Microsoft XML, v6.0  (_use your latest MS XML version, required because of early binding, used for HTTP requests_)
+  - Microsoft Scripting Runtime  (_this may not be required as modules are loading dynamically?, used for JSON parsing and Dictionary structures_)
+  
+- Code away ...
+- Well, ... look at the example Excel file on how to use the API. :-)
+
 
 Copyright and License Information
 ---------------------------------
