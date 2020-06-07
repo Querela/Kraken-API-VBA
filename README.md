@@ -3,7 +3,7 @@ Kraken-API-VBA
 
 Kraken.com API using Visual Basic for Applications (VBA, in Excel)
 
-The following files (_modules_) are more or less linked together and should be imported into and Excel file together to be able to work.
+The following files (_modules_) are more or less linked together and should be imported into an Excel file together to be able to work.
 
 The utility modules:
 
@@ -15,7 +15,7 @@ The public interface (to be used from other modules etc.):
 
 - `API.bas` -- public interface for Kraken.com API
 
-Test code:
+Test code (not required):
 
 - `Test.bas` -- with some test routines
 
