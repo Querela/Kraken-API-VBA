@@ -35,10 +35,10 @@ Private Sub DoGetRecentTrades()
 
     tTime = Time()
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "Trades"
-    
+
     ' Check if assetpair given
     assetpair = ActiveSheet.Range(cellInputAssetPair).Value
     If VBA.Len(assetpair) > 2 Then
@@ -66,7 +66,7 @@ Private Sub DoGetRecentTrades()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
 
@@ -76,20 +76,20 @@ Private Sub DoGetRecentTrades()
     ' append (?) data
     key = arrKeys(0)
     data = result(key)
-    
+
     For i = 0 To UBound(data)
         If i Mod 25 = 0 Then VBA.DoEvents
 
         item = data(i)
         curOffset = offsetTopResults + i
-        
+
         ' TODO: maybe every 100 entries a Application.DoEvents ?
 
         ActiveSheet.Range("B" & curOffset).Value = key
         ActiveSheet.Range("C" & curOffset).Value = item(0)
         ActiveSheet.Range("D" & curOffset).Value = item(1)
         ActiveSheet.Range("E" & curOffset).Value = item(2)
-        
+
         'ActiveSheet.Range("F" & curOffset).Value = item(3)
         Select Case item(3)
             Case "b"
@@ -117,7 +117,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

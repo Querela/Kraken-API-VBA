@@ -14,7 +14,7 @@ Option Explicit
 Private Const colnameAttName As String = "C"
 Private Const colnameAttValue As String = "D"
 
-Private Const offsetTopServerTime As Integer = 4
+Private Const offsetTopServerTime As Integer = 5
 
 ' #############################################################################
 
@@ -26,11 +26,11 @@ Private Sub DoGetServerTime()
 
     ' prepare params
     method = "Time"
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     ActiveSheet.Range(colnameAttName & offsetTopServerTime).Value = "rfc1123"
     ActiveSheet.Range(colnameAttValue & offsetTopServerTime).Value = result("result")("rfc1123")
     ActiveSheet.Range(colnameAttName & (offsetTopServerTime + 1)).Value = "unixtime"

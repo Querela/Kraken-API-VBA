@@ -50,13 +50,13 @@ Private Function GetAllAssetPairs(Optional ByVal includeDarkpool As Boolean = Fa
     Dim method As String
     Dim result As Variant, errJson As Variant
     Dim i As Integer, retVal As String, arrKeys() As Variant, key As String, item As Variant
-    
+
     ' prepare params
     method = "AssetPairs"
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method)
     'Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     ' check error
     errJson = result("error")
     If Not IsEmpty(errJson) Then
@@ -71,17 +71,17 @@ Private Function GetAllAssetPairs(Optional ByVal includeDarkpool As Boolean = Fa
     For i = 0 To UBound(arrKeys)
         key = arrKeys(i)
         Set item = result(key)
-        
+
         If Not includeDarkpool And ExcelUtils.EndsWith(key, ".d") Then GoTo NextIteration
-        
+
         If i > 0 Then
             retVal = retVal & ","
         End If
-        
+
         retVal = retVal & item("altname")
 NextIteration:
     Next
-    
+
     GetAllAssetPairs = retVal
 End Function
 
@@ -91,12 +91,12 @@ Private Sub DoGetTickerInfo()
     Dim result As Variant, item As Variant, errJson As Variant
     Dim assetpairs As String
     Dim i As Integer, curOffset As Integer, arrKeys() As Variant, key As String
-    
+
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "Ticker"
-    
+
     ' Check if assetpair given
     assetpairs = ActiveSheet.Range(cellInputAssetPairs).Value
     If VBA.Len(assetpairs) > 3 Then
@@ -107,11 +107,11 @@ Private Sub DoGetTickerInfo()
         ActiveSheet.Range(cellInputAssetPairs).Value = assetpairs
         params.Add "pair", assetpairs
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -122,7 +122,7 @@ Private Sub DoGetTickerInfo()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
     curOffset = offsetTopResults
@@ -152,7 +152,7 @@ Private Sub DoGetTickerInfo()
         ActiveSheet.Range("S" & curOffset).Value = item("h")(0)
         ActiveSheet.Range("T" & curOffset).Value = item("h")(1)
         ActiveSheet.Range("U" & curOffset).Value = item("o")
-        
+
         curOffset = curOffset + 1
     Next
 End Sub
@@ -163,7 +163,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

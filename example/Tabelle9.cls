@@ -31,12 +31,12 @@ Private Sub DoGetRecentSpread()
     Dim i As Integer, curOffset As Integer
     Dim arrKeys() As Variant, key As String
     Dim data As Variant, item As Variant
-    
+
     Set params = CreateObject("Scripting.Dictionary")
     
     ' prepare params
     method = "Spread"
-    
+
     ' Check if assetpair given
     assetpair = ActiveSheet.Range(cellInputAssetPair).Value
     If VBA.Len(assetpair) > 2 Then
@@ -46,12 +46,12 @@ Private Sub DoGetRecentSpread()
     If VBA.Len(sSince) > 2 Then
         params.Add "since", sSince
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     ' NOTE: DISABLED because of too long output?
     'Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -62,17 +62,17 @@ Private Sub DoGetRecentSpread()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
 
     ' update since for new query
     ActiveSheet.Range(cellInputSince).Value = result("last")
-    
+
     ' append (?) data
     key = arrKeys(0)
     data = result(key)
-    
+
     For i = 0 To UBound(data)
         If i Mod 25 = 0 Then VBA.DoEvents
 
@@ -92,7 +92,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

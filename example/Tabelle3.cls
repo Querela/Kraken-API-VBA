@@ -28,22 +28,22 @@ Private Sub DoGetAssetInfos()
     Dim result As Variant, item As Variant, errJson As Variant
     Dim assets As String
     Dim i As Integer, curOffset As Integer, arrKeys() As Variant, key As String
-    
+
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "Assets"
-    
+
     ' Check if assets given
     assets = ActiveSheet.Range(cellInputAssets).Value
     If VBA.Len(assets) > 2 Then
         params.Add "asset", assets
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -54,7 +54,7 @@ Private Sub DoGetAssetInfos()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
     For i = 0 To UBound(arrKeys)
@@ -78,7 +78,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

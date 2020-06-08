@@ -30,12 +30,12 @@ Private Sub DoGetOHLCData()
     Dim result As Variant, errJson As Variant
     Dim assetpair As String, sInterval As String, sSince As String
     Dim i As Integer, curOffset As Integer, arrKeys() As Variant, key As String, data As Variant, item As Variant
-    
+
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "OHLC"
-    
+
     ' Check if assetpair given
     assetpair = ActiveSheet.Range(cellInputAssetPair).Value
     If VBA.Len(assetpair) > 2 Then
@@ -49,11 +49,11 @@ Private Sub DoGetOHLCData()
     If VBA.Len(sSince) > 0 Then
         params.Add "since", sSince
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -64,17 +64,17 @@ Private Sub DoGetOHLCData()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
 
     ' update since for new query
     ActiveSheet.Range(cellInputSince).Value = result("last")
-    
+
     ' append (?) data
     key = arrKeys(0)
     data = result(key)
-    
+
     For i = 0 To UBound(data)
         If i Mod 25 = 0 Then VBA.DoEvents
 
@@ -99,7 +99,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

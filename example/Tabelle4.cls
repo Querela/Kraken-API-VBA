@@ -29,12 +29,12 @@ Private Sub DoGetTradableAssetPairs()
     Dim result As Variant, item As Variant, errJson As Variant
     Dim assetpairs As String, infoType As String
     Dim i As Integer, curOffset As Integer, arrKeys() As Variant, key As String
-    
+
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "AssetPairs"
-    
+
     ' Check if assetpairs given
     assetpairs = ActiveSheet.Range(cellInputAssetPairs).Value
     If VBA.Len(assetpairs) > 2 Then
@@ -44,11 +44,11 @@ Private Sub DoGetTradableAssetPairs()
     If VBA.Len(infoType) > 2 Then
         params.Add "info", infoType
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -59,7 +59,7 @@ Private Sub DoGetTradableAssetPairs()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
     curOffset = offsetTopResults
@@ -87,7 +87,7 @@ Private Sub DoGetTradableAssetPairs()
         ActiveSheet.Range("Q" & curOffset).Value = item("fee_volume_currency")
         ActiveSheet.Range("R" & curOffset).Value = item("margin_call")
         ActiveSheet.Range("S" & curOffset).Value = item("margin_stop")
-        
+
         curOffset = curOffset + 1
     Next
 End Sub
@@ -98,7 +98,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then

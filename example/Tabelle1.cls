@@ -37,7 +37,7 @@ Private Sub ProcessCryptoNameLink(ByVal Target As Hyperlink)
     name = Target.name
     price = API.RetrieveCurrentPrice(name)
     'price = API.RetrieveCurrentPrice2(name)
-    
+
     oldPrice = Target.Range.offset(0, 1).Value
     Target.Range.offset(0, 1).Value = price
     diffPrice = price - oldPrice
@@ -48,9 +48,9 @@ End Sub
 
 Public Sub UpdatePrices()
     Debug.Print "Update prices ..."
-    
+
     Dim startTime, endTime
-    
+
     Dim name As String
     Dim price As Double
     Dim i As Integer
@@ -61,10 +61,10 @@ Public Sub UpdatePrices()
     Dim c As Range
     Dim oldColorIndex As Integer
     Dim offsetDiff, offsetNameRangeTop, offsetPriceRangeTop As Integer
-    
+
     'Application.ScreenUpdating = False
     startTime = Time()
-    
+
     With Application.Sheets(sheetName)
         For i = 0 To numberOfCurrencies - 1
             VBA.DoEvents
@@ -85,11 +85,11 @@ Public Sub UpdatePrices()
             End With
         Next
     End With
-    
+
     endTime = Time
     Debug.Print "Elapsed time: " & Round(((endTime - startTime) * 24 * 60 * 60), 2) & " sec."
     'Application.ScreenUpdating = True
-    
+
     'Set detailsSheet = Application.Sheets(sheetName)
     'Set currencyNameRange = detailsSheet.Range("B2", "B10")
     'Set currencyPriceRange = detailsSheet.Range("C4", "C12")
@@ -98,7 +98,7 @@ Public Sub UpdatePrices()
     'offsetPriceRangeTop = currencyPriceRange.Row
     'offsetDiff = -offsetNameRangeTop + offsetPriceRangeTop
     'Debug.Print offsetNameRangeTop, offsetPriceRangeTop, offsetDiff
-    
+
     'For Each c In currencyNameRange.Cells
     '    Debug.Print c.Value, "src: " & c.Row, "idx: " & (c.Row - offsetNameRangeTop)
     '    currencyPriceRange.Cells(c.Row - offsetNameRangeTop) = "1"
@@ -118,17 +118,17 @@ End Sub
 
 Public Sub UpdatePrices2()
     Debug.Print "Update prices (v2) ..."
-    
+
     Dim startTime, endTime
 
     Dim name As String
     Dim price, oldPrice, diff As Double
     Dim oldColorIndex As Integer
     Dim i As Integer
-    
+
     'Application.ScreenUpdating = False
     startTime = Time()
-    
+
     With Application.Sheets(sheetName)
         For i = 0 To numberOfCurrencies - 1
             VBA.DoEvents
@@ -163,7 +163,7 @@ Public Sub UpdatePrices2()
         .Range(cellnameOldDatetime).Value = .Range(cellnameUpdateDatetime).Value
         .Range(cellnameUpdateDatetime).Value = Now()
     End With
-    
+
     endTime = Time
     Debug.Print "Elapsed time: " & Round(((endTime - startTime) * 24 * 60 * 60), 2) & " sec."
     'Application.ScreenUpdating = True

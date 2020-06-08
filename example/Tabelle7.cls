@@ -31,12 +31,12 @@ Private Sub DoGetOrderBook()
     Dim i As Integer, curOffset As Integer
     Dim arrKeys() As Variant, key As String
     Dim data As Variant, item As Variant
-    
+
     Set params = CreateObject("Scripting.Dictionary")
-    
+
     ' prepare params
     method = "Depth"
-    
+
     ' Check if assetpair given
     assetpair = ActiveSheet.Range(cellInputAssetPair).Value
     If VBA.Len(assetpair) > 2 Then
@@ -46,11 +46,11 @@ Private Sub DoGetOrderBook()
     If VBA.Len(count) > 2 Then
         params.Add "count", count
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
-    
+
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -61,14 +61,14 @@ Private Sub DoGetOrderBook()
 
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    
+
     Set result = result("result")
     arrKeys = result.Keys
     key = arrKeys(0)
     Set result = result(key)
-    
+
     data = result("asks")
-    
+
     For i = 0 To UBound(data)
         If i Mod 25 = 0 Then VBA.DoEvents
 
@@ -81,9 +81,9 @@ Private Sub DoGetOrderBook()
         ActiveSheet.Range("D" & curOffset).Value = item(1)
         ActiveSheet.Range("E" & curOffset).Value = item(2)
     Next
-    
+
     data = result("bids")
-    
+
     For i = 0 To UBound(data)
         item = data(i)
         curOffset = offsetTopResults + i
@@ -100,7 +100,7 @@ End Sub
 
 Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
-    
+
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then
