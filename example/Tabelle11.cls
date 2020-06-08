@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "Tabelle10"
+Attribute VB_Name = "Tabelle11"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -14,10 +14,12 @@ Option Explicit
 Private Const cellInputCredsKey As String = "D5"
 Private Const cellInputCredsSecret As String = "D6"
 Private Const cellInputCredsFilepath As String = "D8"
-Private Const cellLinkButton As String = "B12"
-Private Const cellOutputErrMsg As String = "D12"
-Private Const offsetTopResults As Integer = 16
-Private Const rangeResultsToClear As String = "B16:C40"
+Private Const cellInputAssetClass As String = "D12"
+Private Const cellInputAsset As String = "D13"
+Private Const cellLinkButton As String = "B15"
+Private Const cellOutputErrMsg As String = "D15"
+Private Const offsetTopResults As Integer = 19
+Private Const rangeResultsToClear As String = "B19:B26"  ' "B19:B27"
 
 ' #############################################################################
 
@@ -52,12 +54,14 @@ Private Function LoadCredentials() As Dictionary
     Set LoadCredentials = creds
 End Function
 
-Private Sub DoGetAccountBalance()
+Private Sub DoGetTradeBalance()
     Dim creds As Dictionary
     Dim method As String
+    Dim params As New Dictionary
+    Dim sAssetClass, sAsset As String
     Dim result As Variant, errJson As Variant
-    Dim i As Integer, curOffset As Integer
-    Dim arrKeys() As Variant, key As String, sValue As String
+    'Dim i As Integer, curOffset As Integer
+    'Dim arrKeys() As Variant, key As String, sValue As String
 
     Set creds = LoadCredentials()
     If creds Is Nothing Then
@@ -66,10 +70,20 @@ Private Sub DoGetAccountBalance()
     End If
 
     ' prepare params
-    method = "Balance"
+    method = "TradeBalance"
+
+    ' Check if assetpair given
+    sAssetClass = ActiveSheet.Range(cellInputAssetClass).Value
+    If Len(sAssetClass) > 0 Then
+        params.Add "aclass", sAssetClass
+    End If
+    sAsset = ActiveSheet.Range(cellInputAsset).Value
+    If Len(sAsset) > 0 Then
+        params.Add "asset", sAsset
+    End If
 
     ' query public API, receive JSON structure
-    Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method)
+    Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
 
     errJson = result("error")
@@ -84,18 +98,28 @@ Private Sub DoGetAccountBalance()
     ActiveSheet.Range(rangeResultsToClear).ClearContents
 
     Set result = result("result")
-    arrKeys = result.Keys
+    'arrKeys = result.Keys
 
-    For i = 0 To UBound(arrKeys)
-        If i Mod 10 = 0 Then VBA.DoEvents
+    'For i = 0 To UBound(arrKeys)
+    '    If i Mod 10 = 0 Then VBA.DoEvents
 
-        key = arrKeys(i)
-        sValue = result(key)
-        curOffset = offsetTopResults + i
+    '    key = arrKeys(i)
+    '    sValue = result(key)
+    '    curOffset = offsetTopResults + i
 
-        ActiveSheet.Range("B" & curOffset).Value = key
-        ActiveSheet.Range("C" & curOffset).Value = sValue
-    Next
+    '    ActiveSheet.Range("B" & curOffset).Value = sValue
+    'Next
+
+    ActiveSheet.Range("B" & (offsetTopResults + 0)).Value = result("eb")
+    ActiveSheet.Range("B" & (offsetTopResults + 1)).Value = result("tb")
+    ActiveSheet.Range("B" & (offsetTopResults + 2)).Value = result("m")
+    ActiveSheet.Range("B" & (offsetTopResults + 3)).Value = result("n")
+    ActiveSheet.Range("B" & (offsetTopResults + 4)).Value = result("c")
+    ActiveSheet.Range("B" & (offsetTopResults + 5)).Value = result("v")
+    ActiveSheet.Range("B" & (offsetTopResults + 6)).Value = result("e")
+    ActiveSheet.Range("B" & (offsetTopResults + 7)).Value = result("mf")
+    ' seems to be empty?
+    'ActiveSheet.Range("B" & (offsetTopResults + 8)).Value = result("ml")
 End Sub
 
 
@@ -106,12 +130,11 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
-    'If "Get account balance" = Target.name Then
     If cellLinkButton = cellName Then
-        Debug.Print "Get Account Balance ..."
+        Debug.Print "Get Trade Balance ..."
         Application.ScreenUpdating = False
         On Error Resume Next
-        DoGetAccountBalance
+        DoGetTradeBalance
         Application.ScreenUpdating = True
     End If
 

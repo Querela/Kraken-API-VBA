@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "Tabelle10"
+Attribute VB_Name = "Tabelle12"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -14,10 +14,12 @@ Option Explicit
 Private Const cellInputCredsKey As String = "D5"
 Private Const cellInputCredsSecret As String = "D6"
 Private Const cellInputCredsFilepath As String = "D8"
-Private Const cellLinkButton As String = "B12"
-Private Const cellOutputErrMsg As String = "D12"
-Private Const offsetTopResults As Integer = 16
-Private Const rangeResultsToClear As String = "B16:C40"
+Private Const cellInputTrades As String = "D12"
+Private Const cellInputUserref As String = "D13"
+Private Const cellLinkButton As String = "B15"
+Private Const cellOutputErrMsg As String = "D15"
+Private Const offsetTopResults As Integer = 19
+Private Const rangeResultsToClear As String = "B19:Z118"
 
 ' #############################################################################
 
@@ -52,12 +54,14 @@ Private Function LoadCredentials() As Dictionary
     Set LoadCredentials = creds
 End Function
 
-Private Sub DoGetAccountBalance()
+Private Sub DoGetOpenOrders()
     Dim creds As Dictionary
     Dim method As String
+    Dim params As New Dictionary
+    Dim sTrades, sUserref As String
     Dim result As Variant, errJson As Variant
     Dim i As Integer, curOffset As Integer
-    Dim arrKeys() As Variant, key As String, sValue As String
+    Dim arrKeys() As Variant, key As String, item As Variant, itemDescr As Variant
 
     Set creds = LoadCredentials()
     If creds Is Nothing Then
@@ -66,10 +70,20 @@ Private Sub DoGetAccountBalance()
     End If
 
     ' prepare params
-    method = "Balance"
+    method = "OpenOrders"
+
+    ' Check if assetpair given
+    sTrades = ActiveSheet.Range(cellInputTrades).Value
+    If Len(sTrades) > 0 Then
+        params.Add "trades", sTrades
+    End If
+    sUserref = ActiveSheet.Range(cellInputUserref).Value
+    If Len(sUserref) > 0 Then
+        params.Add "userref", sUserref
+    End If
 
     ' query public API, receive JSON structure
-    Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method)
+    Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
 
     errJson = result("error")
@@ -84,17 +98,48 @@ Private Sub DoGetAccountBalance()
     ActiveSheet.Range(rangeResultsToClear).ClearContents
 
     Set result = result("result")
+    Set result = result("open")
     arrKeys = result.Keys
 
     For i = 0 To UBound(arrKeys)
         If i Mod 10 = 0 Then VBA.DoEvents
 
         key = arrKeys(i)
-        sValue = result(key)
+        Set item = result(key)
         curOffset = offsetTopResults + i
 
         ActiveSheet.Range("B" & curOffset).Value = key
-        ActiveSheet.Range("C" & curOffset).Value = sValue
+        ActiveSheet.Range("C" & curOffset).Value = item("refid")
+        ActiveSheet.Range("D" & curOffset).Value = item("userref")
+        ActiveSheet.Range("E" & curOffset).Value = item("status")
+        ActiveSheet.Range("F" & curOffset).Value = item("opentm")
+        ActiveSheet.Range("G" & curOffset).Value = item("starttm")
+        ActiveSheet.Range("H" & curOffset).Value = item("expiretm")
+
+        Set itemDescr = item("descr")
+        ActiveSheet.Range("I" & curOffset).Value = itemDescr("pair")
+        ActiveSheet.Range("J" & curOffset).Value = itemDescr("type")
+        ActiveSheet.Range("K" & curOffset).Value = itemDescr("ordertype")
+        ActiveSheet.Range("L" & curOffset).Value = itemDescr("price")
+        ActiveSheet.Range("M" & curOffset).Value = itemDescr("price2")
+        ActiveSheet.Range("N" & curOffset).Value = itemDescr("leverage")
+        ActiveSheet.Range("O" & curOffset).Value = itemDescr("order")
+        ActiveSheet.Range("P" & curOffset).Value = itemDescr("close")
+
+        ActiveSheet.Range("Q" & curOffset).Value = item("vol")
+        ActiveSheet.Range("R" & curOffset).Value = item("vol_exec")
+        ActiveSheet.Range("S" & curOffset).Value = item("cost")
+        ActiveSheet.Range("T" & curOffset).Value = item("fee")
+        ActiveSheet.Range("U" & curOffset).Value = item("price")
+        ActiveSheet.Range("V" & curOffset).Value = item("stopprice")
+        ActiveSheet.Range("W" & curOffset).Value = item("limitprice")
+        ActiveSheet.Range("X" & curOffset).Value = item("misc")
+        ActiveSheet.Range("Y" & curOffset).Value = item("oflags")
+
+        If item.Exists("trades") Then
+            Set itemDescr = item("trades")
+            ActiveSheet.Range("Z" & curOffset).Value = ""
+        End If
     Next
 End Sub
 
@@ -106,12 +151,11 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     Dim cellName As String
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
-    'If "Get account balance" = Target.name Then
     If cellLinkButton = cellName Then
-        Debug.Print "Get Account Balance ..."
+        Debug.Print "Get Open Order ..."
         Application.ScreenUpdating = False
         On Error Resume Next
-        DoGetAccountBalance
+        DoGetOpenOrders
         Application.ScreenUpdating = True
     End If
 
