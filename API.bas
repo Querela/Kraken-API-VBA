@@ -19,7 +19,7 @@ Public Function RetrieveCurrentPrice(ByVal name As String) As Double
     Dim varJson As Variant
     Dim strState As String
     Dim price As Double
-    
+
     Debug.Print "Retrieve current price for:", name
 
     ' build URL
@@ -30,9 +30,9 @@ Public Function RetrieveCurrentPrice(ByVal name As String) As Double
     WebUtils.ParseJson strJsonString, varJson, strState
     ' get current price
     price = Evaluate(varJson("result")(name)("c")(0))
-    
+
     RetrieveCurrentPrice = price
-    
+
     Debug.Print "Current price of " & name & ": " & price
 End Function
 
@@ -41,23 +41,23 @@ Public Function RetrieveCurrentPrice2(ByVal name As String) As Double
     Dim params As Object
     Dim result As Variant
     Dim price As Double
-    
+
     Debug.Print "Retrieve current price for:", name
 
     ' prepare params
     method = "Ticker"
     Set params = CreateObject("Scripting.Dictionary")
     params.Add "pair", name
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
 
     ' get current price
     price = Evaluate(result("result")(name)("c")(0))
-    
+
     RetrieveCurrentPrice2 = price
-    
+
     Debug.Print "Current price of " & name & ": " & price
 End Function
 
@@ -139,10 +139,10 @@ Public Function KrakenQueryPublic(ByVal sMethod As String, Optional ByVal params
     Dim strState As String
     Dim i As Integer
     Dim errJson As Variant
-    
+
     ' build URI Path
     urlpath = "/" & krakenVersion & "/public/" & sMethod
-    
+
     ' build query string
     'If params Is Nothing Then
     '    queryString = ""
@@ -170,7 +170,7 @@ Public Function KrakenQueryPublic(ByVal sMethod As String, Optional ByVal params
             Next
         End If
     End If
-    
+
     Set KrakenQueryPublic = varJson
 End Function
 
@@ -180,35 +180,35 @@ Public Function KrakenQueryPrivate(ByVal sKey As String, ByVal sSecret As String
     Dim headers As Object
     Dim result As String
     Dim i As Integer
-    
+
     Set headers = CreateObject("Scripting.Dictionary")
-    
+
     If data Is Nothing Then
         Set data = CreateObject("Scripting.Dictionary")
     End If
     Debug.Assert "Dictionary" = TypeName(data)
     data.Add "nonce", nonce_3()
-    
+
     urlpath = "/" & krakenVersion & "/private/" & sMethod
-    
+
     signature = KrakenSign(sSecret, data, urlpath)
-    
+
     headers.Add "User-Agent", myUserAgent
     headers.Add "API-Key", sKey
     headers.Add "API-Sign", signature
-    
+
     uri = "https://api.kraken.com" & urlpath
-    
+
     'uri = "https://httpbin.org/post" ' DEBUG/TESTING
     result = WebUtils.DoHTTPPost(uri, data, headers)
     KrakenQueryPrivate = result
-    
+
     ' parse JSON
     Dim strJsonString As String
     Dim varJson As Variant
     Dim strState As String
     Dim errJson As Variant
-    
+
     strJsonString = result
     ' parse json to object
     WebUtils.ParseJson strJsonString, varJson, strState

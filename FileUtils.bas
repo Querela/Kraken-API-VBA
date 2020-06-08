@@ -12,6 +12,21 @@ Public Const krakenCredentialsFilename As String = "kraken.key"
 
 ' #############################################################################
 
+Public Function GetDefaultKrakenCredentialsFilepath() As String
+    Debug.Print "Working dir", ActiveWorkbook.path
+    GetDefaultKrakenCredentialsFilepath = ActiveWorkbook.path & "\" & krakenCredentialsFilename
+End Function
+
+Public Function ExistsKrakenCredentialsFile(Optional ByVal filename As String = "") As Boolean
+    Dim fio As New FileSystemObject
+
+    If ExcelUtils.IsStringEmpty(filename) Then
+        filename = GetDefaultKrakenCredentialsFilepath()
+    End If
+
+    ExistsKrakenCredentialsFile = fio.FileExists(filename)
+End Function
+
 Public Function LoadKrakenCredentials(Optional ByVal filename As String = "") As Dictionary
     Dim fio As New FileSystemObject
     Dim tStream As TextStream
@@ -20,8 +35,7 @@ Public Function LoadKrakenCredentials(Optional ByVal filename As String = "") As
     Dim creds As New Dictionary
 
     If ExcelUtils.IsStringEmpty(filename) Then
-        Debug.Print "Working dir", ActiveWorkbook.path
-        filename = ActiveWorkbook.path & "\" & krakenCredentialsFilename
+        filename = GetDefaultKrakenCredentialsFilepath()
     End If
 
     ' Open with default options

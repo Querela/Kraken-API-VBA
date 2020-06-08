@@ -232,7 +232,7 @@ End Sub
 
 Function DoHTTPGet(url As String, Optional params As Object = Nothing, Optional headers As Object = Nothing) As String
     If msXML Is Nothing Then Set msXML = New XMLHTTP60
-    
+
     Dim queryString As String
     If Not params Is Nothing Then
         queryString = "?" & encodeCollection(params)
@@ -248,7 +248,7 @@ Function DoHTTPGet(url As String, Optional params As Object = Nothing, Optional 
 
             k = headers.Keys
             v = headers.Items
-        
+
             For i = 0 To headers.count - 1
                 Debug.Print i, k(i), v(i), TypeName(v(i))
                 If Len(CStr(v(i))) = 0 Then
@@ -268,9 +268,9 @@ End Function
 
 Function DoHTTPPost(url As String, data As Object, headers As Object) As String
     If msXMLPost Is Nothing Then Set msXMLPost = New ServerXMLHTTP60
-    
+
     Debug.Assert "Dictionary" = TypeName(headers)
-    
+
     Dim postData As String
     Dim i As Integer
     Dim k, v
@@ -303,14 +303,14 @@ Public Function encodeCollection(ByVal params As Object) As String
     Dim result As String
     Dim i As Integer
     Dim k, v
-    
+
     If params Is Nothing Then
         encodeCollection = ""
         Exit Function
     End If
-    
+
     Debug.Assert "Dictionary" = TypeName(params)
-    
+
     result = ""
     k = params.Keys
     v = params.Items
