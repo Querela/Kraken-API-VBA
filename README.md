@@ -21,7 +21,7 @@ Test code (not required):
 
 Example Use-Case(s):
 
-- `example/` folder
+- `example/` folder (with [example Excel file](https://github.com/Querela/Kraken-API-VBA/raw/master/example/Kraken.xlsm))
 
 Usage
 -----
@@ -34,7 +34,7 @@ Usage
   - Microsoft Scripting Runtime  (_this may not be required as modules are loading dynamically?, used for JSON parsing and Dictionary structures_)
   
 - Code away ...
-- Well, ... look at the example Excel file on how to use the API. :-)
+- Well, ... look at the [example Excel file](https://github.com/Querela/Kraken-API-VBA/raw/master/example/Kraken.xlsm) on how to use the API. :-)
 
 
 Copyright and License Information
