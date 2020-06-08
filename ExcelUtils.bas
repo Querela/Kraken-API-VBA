@@ -23,6 +23,10 @@ Public Function EndsWith(str As String, ending As String) As Boolean
     EndsWith = (Right(Trim(UCase(str)), endingLen) = UCase(ending))
 End Function
 
+Public Function IsStringEmpty(ByVal s As String) As Boolean
+    IsStringEmpty = (Len(Trim(CStr(s))) = 0)
+End Function
+
 ' #############################################################################
 
 Public Function TimestampToExcel(ByVal timestamp As Long) As Double

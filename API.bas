@@ -262,6 +262,8 @@ End Function
 ' https://stackoverflow.com/questions/7004754/how-to-programmatically-code-an-undo-function-in-excel-vba
 ' https://www.jkp-ads.com/Articles/UndoWithVBA00.asp
 ' https://github.com/VBA-tools/VBA-Web/blob/master/src/WebHelpers.bas#L1438
+' https://www.extendoffice.com/documents/excel/2473-excel-timestamp-to-date.html
+' https://www.contextures.com/xlDataVal01.html#create
 '
 
 ' #############################################################################

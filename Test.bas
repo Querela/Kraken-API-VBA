@@ -141,3 +141,10 @@ Public Sub Test_KrakenPublic1()
     Set result = API.KrakenQueryPublic(method, data)
     Debug.Print method, WebUtils.BeautifyJson(result)
 End Sub
+
+Public Sub Test_IO2()
+    Dim creds As Object
+    Set creds = FileUtils.LoadKrakenCredentials
+    Debug.Print "Creds", WebUtils.BeautifyJson(creds)
+    Debug.Print "The secret is """ & creds("secret") & """."
+End Sub
