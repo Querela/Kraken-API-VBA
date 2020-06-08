@@ -64,6 +64,8 @@ Private Sub DoGetTradableAssetPairs()
     arrKeys = result.Keys
     curOffset = offsetTopResults
     For i = 0 To UBound(arrKeys)
+        If i Mod 25 = 0 Then VBA.DoEvents
+
         key = arrKeys(i)
         Set item = result(key)
 

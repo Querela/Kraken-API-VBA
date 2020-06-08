@@ -70,6 +70,8 @@ Private Sub DoGetOrderBook()
     data = result("asks")
     
     For i = 0 To UBound(data)
+        If i Mod 25 = 0 Then VBA.DoEvents
+
         item = data(i)
         curOffset = offsetTopResults + i
 

@@ -67,6 +67,8 @@ Public Sub UpdatePrices()
     
     With Application.Sheets(sheetName)
         For i = 0 To numberOfCurrencies - 1
+            VBA.DoEvents
+
             ' save old color & highlight as "working"
             With .Cells(i + offsetCurrencyPriceTop, colnameCurrencyPrice).Interior
                 oldColorIndex = .ColorIndex
@@ -129,6 +131,8 @@ Public Sub UpdatePrices2()
     
     With Application.Sheets(sheetName)
         For i = 0 To numberOfCurrencies - 1
+            VBA.DoEvents
+
             ' save old color & highlight as "working"
             With .Cells(i + offsetCurrencyPriceTop, colnameCurrencyPrice).Interior
                 oldColorIndex = .ColorIndex

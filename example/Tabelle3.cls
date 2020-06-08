@@ -58,6 +58,8 @@ Private Sub DoGetAssetInfos()
     Set result = result("result")
     arrKeys = result.Keys
     For i = 0 To UBound(arrKeys)
+        If i Mod 25 = 0 Then VBA.DoEvents
+
         key = arrKeys(i)
         Set item = result(key)
         curOffset = offsetTopResults + i

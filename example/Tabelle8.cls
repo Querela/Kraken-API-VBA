@@ -31,7 +31,9 @@ Private Sub DoGetRecentTrades()
     Dim i As Integer, curOffset As Integer
     Dim arrKeys() As Variant, key As String
     Dim data As Variant, item As Variant
-    
+    Dim tTime
+
+    tTime = Time()
     Set params = CreateObject("Scripting.Dictionary")
     
     ' prepare params
@@ -46,12 +48,14 @@ Private Sub DoGetRecentTrades()
     If VBA.Len(sSince) > 2 Then
         params.Add "since", sSince
     End If
-    
+
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPublic(method, params)
     ' NOTE: DISABLED because of too long output?
     'Debug.Print method, WebUtils.BeautifyJson(result)
-    
+    Debug.Print "Elapsed time (query): " & Round(((Time() - tTime) * 24 * 60 * 60), 5) & " sec."
+
+    tTime = Time()
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -68,12 +72,14 @@ Private Sub DoGetRecentTrades()
 
     ' update since for new query
     ActiveSheet.Range(cellInputSince).Value = result("last")
-    
+
     ' append (?) data
     key = arrKeys(0)
     data = result(key)
     
     For i = 0 To UBound(data)
+        If i Mod 25 = 0 Then VBA.DoEvents
+
         item = data(i)
         curOffset = offsetTopResults + i
         
@@ -102,6 +108,7 @@ Private Sub DoGetRecentTrades()
 
         ActiveSheet.Range("H" & curOffset).Value = item(5)
     Next
+    Debug.Print "Elapsed time (formatting data): " & Round(((Time() - tTime) * 24 * 60 * 60), 5) & " sec."
 End Sub
 
 
