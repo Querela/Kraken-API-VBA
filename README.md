@@ -10,6 +10,7 @@ The utility modules:
 - `WebUtils.bas` -- for parsing/printing JSON, HTTP GET/POST requests
 - `CryptoUtils.bas` -- for Hashing, Signing, Byte conversion etc.
 - `ExcelUtils.bas` -- with some helper functions for Excel
+- `FileUtils.bas` -- loading of `kraken.key` file from local computer (Windows only?) to use for storing Kraken key & secret
 
 The public interface (to be used from other modules etc.):
 
@@ -23,6 +24,7 @@ Example Use-Case(s):
 
 - `example/` folder (with [example Excel file](https://github.com/Querela/Kraken-API-VBA/raw/master/example/Kraken.xlsm))
 
+
 Usage
 -----
 
@@ -35,6 +37,17 @@ Usage
   
 - Code away ...
 - Well, ... look at the [example Excel file](https://github.com/Querela/Kraken-API-VBA/raw/master/example/Kraken.xlsm) on how to use the API. :-)
+
+
+Thoughts ?
+----------
+
+- subsitute *own* code with more official implementations,
+
+  - [VBA-JSON](https://github.com/VBA-tools/VBA-JSON)
+  - [VBA-Web](https://github.com/VBA-tools/VBA-Web)
+  
+- only for google sheets: [cryptofinance.ai](https://github.com/cryptofinance-ai/cryptofinance-google-sheets-add-on#how-to-install)
 
 
 Copyright and License Information
