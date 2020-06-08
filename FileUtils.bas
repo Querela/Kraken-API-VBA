@@ -32,10 +32,20 @@ Public Function LoadKrakenCredentials(Optional ByVal filename As String = "") As
         Do While Not .AtEndOfStream
             line = .ReadLine
 
-            parts = Split(line, "=", 3)
-            sKey = Trim(parts(0))
-            sValue = Trim(parts(1))
-            creds.Add sKey, sValue
+            If ExcelUtils.IsStringEmpty(line) Then
+                ' Skip, empty line
+            ElseIf ExcelUtils.StartsWith(line, ";") Then
+                ' Skip, comment line
+            Else
+                parts = Split(line, "=", 2)
+                sKey = Trim(parts(0))
+                sValue = Trim(parts(1))
+                If creds.Exists(sKey) Then
+                    Debug.Print "Key """ & sKey & """ already exists! Overwrite with newer value ..."
+                    creds.Remove (sKey)
+                End If
+                creds.Add sKey, sValue
+            End If
         Loop
         .Close
     End With

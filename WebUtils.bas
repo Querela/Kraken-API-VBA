@@ -74,7 +74,7 @@ Private Sub Tokenize(objTokens, objRegEx, strContent, bMatched, strType)
     lngCopyIndex = 1
     With objRegEx
         For Each objMatch In .Execute(strContent)
-            strKey = "<" & objTokens.Count & strType & ">"
+            strKey = "<" & objTokens.count & strType & ">"
             bMatched = True
             With objMatch
                 objTokens(strKey) = .Value
@@ -126,9 +126,9 @@ Private Sub Retrieve(objTokens, objRegEx, strTokenKey, varTransfer)
                 For Each objMatch In objMatches
                     Retrieve objTokens, objRegEx, objMatch.Value, varValue
                     If IsObject(varValue) Then
-                        Set objArrayElts(objArrayElts.Count) = varValue
+                        Set objArrayElts(objArrayElts.count) = varValue
                     Else
-                        objArrayElts(objArrayElts.Count) = varValue
+                        objArrayElts(objArrayElts.count) = varValue
                     End If
                     varTransfer = objArrayElts.Items
                 Next
@@ -179,7 +179,7 @@ Private Sub BeautyTraverse(strResult As String, lngIndent As Long, varElement As
 
     Select Case VarType(varElement)
         Case vbObject
-            If varElement.Count = 0 Then
+            If varElement.count = 0 Then
                 strResult = strResult & "{}"
             Else
                 strResult = strResult & "{" & vbCrLf
@@ -241,7 +241,7 @@ Function DoHTTPGet(url As String, Optional params As Object = Nothing, Optional 
 
     With msXML
         .Open "GET", url, False
-        
+
         If Not headers Is Nothing Then
             Dim i As Integer
             Dim k, v
@@ -249,7 +249,7 @@ Function DoHTTPGet(url As String, Optional params As Object = Nothing, Optional 
             k = headers.Keys
             v = headers.Items
         
-            For i = 0 To headers.Count - 1
+            For i = 0 To headers.count - 1
                 Debug.Print i, k(i), v(i), TypeName(v(i))
                 If Len(CStr(v(i))) = 0 Then
                     Debug.Print "Filter out header with empty value: " & k(i)
@@ -259,8 +259,9 @@ Function DoHTTPGet(url As String, Optional params As Object = Nothing, Optional 
                 End If
             Next
         End If
-        
+
         .send
+
         DoHTTPGet = StrConv(.responseBody, vbUnicode)
     End With
 End Function
@@ -278,11 +279,11 @@ Function DoHTTPPost(url As String, data As Object, headers As Object) As String
 
     With msXMLPost
         .Open "POST", url, False
-        
+
         k = headers.Keys
         v = headers.Items
-    
-        For i = 0 To headers.Count - 1
+
+        For i = 0 To headers.count - 1
             Debug.Print i, k(i), v(i), TypeName(v(i))
             If Len(CStr(v(i))) = 0 Then
                 Debug.Print "Filter out header with empty value: " & k(i)
@@ -291,9 +292,9 @@ Function DoHTTPPost(url As String, data As Object, headers As Object) As String
                 .setRequestHeader k(i), v(i)
             End If
         Next
-        
+
         .send postData
-    
+
         DoHTTPPost = StrConv(.responseBody, vbUnicode)
     End With
 End Function
@@ -314,7 +315,7 @@ Public Function encodeCollection(ByVal params As Object) As String
     k = params.Keys
     v = params.Items
 
-    For i = 0 To params.Count - 1
+    For i = 0 To params.count - 1
         If i > 0 Then
             result = result & "&"
         End If

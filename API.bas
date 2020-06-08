@@ -9,6 +9,7 @@ Option Explicit
 
 Private Const krakenVersion As Integer = 0
 Private Const krakenAPIBaseURI As String = "https://api.kraken.com"
+Private Const myUserAgent As String = "VBA-KrakenEx/0.2 (https://github.com/Querela/Kraken-API-VBA)"
 
 ' #############################################################################
 
@@ -63,7 +64,18 @@ End Function
 ' #############################################################################
 
 Public Function nonce() As String
-    nonce = CStr((Now() - 25569) * 86400)
+    ' time in seconds
+    nonce = CStr((Now() - 25569) * 86400 * 1000)
+End Function
+
+Public Function nonce_2() As String
+    ' millisecond time
+    nonce_2 = CStr((Now() - 25569) * 86400 * 1000)
+End Function
+
+Public Function nonce_3() As String
+    ' millisecond time
+    nonce_3 = CStr(CLngLng((DateDiff("s", "01/01/1970", Date) + Timer) * 1000))
 End Function
 
 ' krakenex translation?
@@ -83,18 +95,19 @@ Public Function KrakenSign(ByVal sSharedSecretKey As String, ByVal data As Objec
     Dim postData As String
     Dim encoded() As Byte
     Dim message() As Byte
+    Dim bSharedSecretKey() As Byte
     Dim sigdigest() As Byte
     Dim signature As String
     Dim b1() As Byte
     Dim b2() As Byte
-    
+
     postData = WebUtils.encodeCollection(data)
     'Debug.Print "postdata", postdata
     'Debug.Print "nonce", data("nonce")
     'Debug.Print "tempStr", data("nonce") & postdata
     encoded = CryptoUtils.ToBytes(data("nonce") & postData)
     'Debug.Print "encoded", CryptoUtils.ConvToHexString(encoded)
-    
+
     b1 = CryptoUtils.ToBytes(urlpath)
     b2 = CryptoUtils.SHA256(encoded)
     'Debug.Print "urlpath", urlpath
@@ -102,12 +115,15 @@ Public Function KrakenSign(ByVal sSharedSecretKey As String, ByVal data As Objec
     'Debug.Print "sha256(encoded)", CryptoUtils.ConvToHexString(b2)
     message = CryptoUtils.ByteConcat(b1, b2)
     Debug.Print "message", CryptoUtils.ConvToHexString(message)
-    
-    sigdigest = CryptoUtils.HMACSHA512(message, sSharedSecretKey)
+
+    bSharedSecretKey = CryptoUtils.DecodeBase64(sSharedSecretKey)
+
+    'sigdigest = CryptoUtils.HMACSHA512(message, sSharedSecretKey)
+    sigdigest = CryptoUtils.HMACSHA512_2(message, bSharedSecretKey)
     'Debug.Print "sigdigest", CryptoUtils.ConvToHexString(sigdigest)
     signature = CryptoUtils.ConvToBase64String(sigdigest)
     Debug.Print "signature", signature
-    
+
     KrakenSign = signature
 End Function
 
@@ -171,13 +187,13 @@ Public Function KrakenQueryPrivate(ByVal sKey As String, ByVal sSecret As String
         Set data = CreateObject("Scripting.Dictionary")
     End If
     Debug.Assert "Dictionary" = TypeName(data)
-    data.Add "nonce", nonce()
+    data.Add "nonce", nonce_3()
     
     urlpath = "/" & krakenVersion & "/private/" & sMethod
     
     signature = KrakenSign(sSecret, data, urlpath)
     
-    headers.Add "User-Agent", "VBA-KrakenEx/0.1 (no URL currently, contact github:Querela)"
+    headers.Add "User-Agent", myUserAgent
     headers.Add "API-Key", sKey
     headers.Add "API-Sign", signature
     
@@ -264,6 +280,7 @@ End Function
 ' https://github.com/VBA-tools/VBA-Web/blob/master/src/WebHelpers.bas#L1438
 ' https://www.extendoffice.com/documents/excel/2473-excel-timestamp-to-date.html
 ' https://www.contextures.com/xlDataVal01.html#create
+' https://www.mrexcel.com/board/threads/how-to-get-unix-timestamp-in-milliseconds-vba.973463/
 '
 
 ' #############################################################################

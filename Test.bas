@@ -148,3 +148,57 @@ Public Sub Test_IO2()
     Debug.Print "Creds", WebUtils.BeautifyJson(creds)
     Debug.Print "The secret is """ & creds("secret") & """."
 End Sub
+
+Public Sub Test_decodeBase64()
+    Dim creds As Object
+
+    Set creds = FileUtils.LoadKrakenCredentials
+    Debug.Print "Creds", WebUtils.BeautifyJson(creds)
+    Debug.Print "The secret is """ & creds("secret") & """."
+
+    Dim bSecret() As Byte, sSecret As String, sSecret2 As String
+
+    sSecret = creds("secret")
+
+    bSecret = CryptoUtils.DecodeBase64(sSecret)
+    sSecret2 = CryptoUtils.EncodeBase64(bSecret)
+    Debug.Assert sSecret = sSecret2
+    Debug.Print "secret (orig)", sSecret
+    Debug.Print "secret (dupl)", sSecret2
+
+    Debug.Print CryptoUtils.EncodeBase64(bSecret)
+    Debug.Print CryptoUtils.EncodeBase64(bSecret, noLinebreaks:=False)
+    Debug.Print CryptoUtils.ConvToHexString(bSecret)
+    Debug.Print CryptoUtils.ConvToBase64String(bSecret)
+End Sub
+
+Public Sub Test_KrakenPrivate2()
+    Dim creds As Object
+    Dim key, secret As String
+    Dim method As String
+    Dim result As Variant
+
+    ' TODO: how to handle missing file?
+    Set creds = FileUtils.LoadKrakenCredentials
+    Debug.Print "Creds", WebUtils.BeautifyJson(creds)
+
+    ' Note key should not be empty, as empty headers are not allowed?!?
+    key = creds("key")
+    secret = creds("secret")
+    method = "Balance"
+
+    Set result = API.KrakenQueryPrivate(key, secret, method)
+    Debug.Print method, WebUtils.BeautifyJson(result)
+End Sub
+
+Public Sub Test_nonces()
+    Dim nonce As String
+    nonce = CStr((Now() - 25569) * 86400)
+    Debug.Print "nonce", nonce
+    Debug.Print "Timer", Timer
+    Debug.Print "timestamp?", DateDiff("s", "01/01/1970", Date)
+    Debug.Print "better1?", (DateDiff("s", "01/01/1970", Date) + Timer) * 1000
+    Debug.Print "better2?", Split((DateDiff("s", "01/01/1970", Date) + Timer) * 1000, ".")(0)
+    Debug.Print "better2?", Split((DateDiff("s", "01/01/1970", Date) + Timer) * 1000, ",")(0)
+    Debug.Print "better4?", CLngLng((DateDiff("s", "01/01/1970", Date) + Timer) * 1000)
+End Sub

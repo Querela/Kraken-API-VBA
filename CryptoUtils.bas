@@ -31,6 +31,17 @@ Public Function HMACSHA512(ByRef bData() As Byte, ByVal sSharedSecretKey As Stri
     Set enc = Nothing
 End Function
 
+Public Function HMACSHA512_2(ByRef bData() As Byte, ByRef bSharedSecretKey() As Byte) As Byte()
+    Dim enc As Object
+
+    Set enc = CreateObject("System.Security.Cryptography.HMACSHA512")
+    enc.key = bSharedSecretKey
+
+    HMACSHA512_2 = enc.ComputeHash_2(bData)
+
+    Set enc = Nothing
+End Function
+
 Public Function SHA256(bInput() As Byte) As Byte()
     Dim Encoder_SHA256 As Object
     Set Encoder_SHA256 = CreateObject("System.Security.Cryptography.SHA256Managed")
@@ -82,9 +93,10 @@ End Function
 
 ' #############################################################################
 
-Public Function EncodeBase64(ByRef arrData() As Byte) As String
+Public Function EncodeBase64(ByRef arrData() As Byte, Optional ByVal noLinebreaks As Boolean = True) As String
     Dim objXML As MSXML2.DOMDocument60
     Dim objNode As MSXML2.IXMLDOMNode
+    Dim sDecoded As String
 
     Set objXML = New MSXML2.DOMDocument60
 
@@ -93,7 +105,28 @@ Public Function EncodeBase64(ByRef arrData() As Byte) As String
     objNode.DataType = "bin.base64"
     objNode.nodeTypedValue = arrData
 
-    EncodeBase64 = objNode.Text
+    sDecoded = objNode.Text
+    If noLinebreaks Then
+        sDecoded = Replace(sDecoded, vbLf, "")
+    End If
+    EncodeBase64 = sDecoded
+
+    Set objNode = Nothing
+    Set objXML = Nothing
+End Function
+
+Public Function DecodeBase64(ByRef sEncoded As String) As Byte()
+    Dim objXML As MSXML2.DOMDocument60
+    Dim objNode As MSXML2.IXMLDOMNode
+
+    Set objXML = New MSXML2.DOMDocument60
+
+    ' base64 to byte array
+    Set objNode = objXML.createElement("b64")
+    objNode.DataType = "bin.base64"
+    objNode.Text = sEncoded
+
+    DecodeBase64 = objNode.nodeTypedValue
 
     Set objNode = Nothing
     Set objXML = Nothing

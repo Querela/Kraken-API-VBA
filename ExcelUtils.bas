@@ -23,6 +23,12 @@ Public Function EndsWith(str As String, ending As String) As Boolean
     EndsWith = (Right(Trim(UCase(str)), endingLen) = UCase(ending))
 End Function
 
+Public Function StartsWith(str As String, start As String) As Boolean
+     Dim startLen As Integer
+     startLen = Len(start)
+     StartsWith = (Left(Trim(UCase(str)), startLen) = UCase(start))
+End Function
+
 Public Function IsStringEmpty(ByVal s As String) As Boolean
     IsStringEmpty = (Len(Trim(CStr(s))) = 0)
 End Function
