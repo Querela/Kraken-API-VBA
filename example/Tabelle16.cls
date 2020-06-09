@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "Tabelle13"
+Attribute VB_Name = "Tabelle16"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -14,18 +14,13 @@ Option Explicit
 Private Const cellInputCredsKey As String = "D5"
 Private Const cellInputCredsSecret As String = "D6"
 Private Const cellInputCredsFilepath As String = "D8"
-Private Const cellInputTrades As String = "D12"
-Private Const cellInputUserref As String = "D13"
-Private Const cellInputTimeStart As String = "D14"
-Private Const cellInputTimeEnd As String = "D15"
-Private Const cellInputResultOffset As String = "D16"
-Private Const cellInputTimeType As String = "D17"
-Private Const cellOutputNumResultsTotal As String = "E20"
-Private Const cellLinkButton As String = "B19"
-Private Const cellLinkClearBtn As String = "B20"
-Private Const cellOutputErrMsg As String = "D19"
-Private Const offsetTopResults As Integer = 23
-Private Const rangeResultsToClear As String = "B23:AB72"
+Private Const cellInputTXIDs As String = "D12"
+Private Const cellInputTrades As String = "D13"
+Private Const cellLinkButton As String = "B15"
+Private Const cellLinkClearBtn As String = "B16"
+Private Const cellOutputErrMsg As String = "D15"
+Private Const offsetTopResults As Integer = 19
+Private Const rangeResultsToClear As String = "B19:V118"
 
 ' #############################################################################
 
@@ -62,86 +57,52 @@ End Function
 
 Private Function GatherInputParameters() As Dictionary
     Dim params As New Dictionary
-    Dim sTrades, sUserref As String
-    Dim vTimeStart As Variant, vTimeEnd As Variant, sTimeType As String, iResultOffset As Integer
+    Dim sTrades, sTXIDs As String
 
+    sTXIDs = ActiveSheet.Range(cellInputTXIDs).Value
+    If Len(sTXIDs) > 0 Then
+        params.Add "txid", sTXIDs
+    End If
     sTrades = ActiveSheet.Range(cellInputTrades).Value
     If Len(sTrades) > 0 Then
         params.Add "trades", sTrades
-    End If
-    sUserref = ActiveSheet.Range(cellInputUserref).Value
-    If Len(sUserref) > 0 Then
-        params.Add "userref", sUserref
-    End If
-    vTimeStart = ActiveSheet.Range(cellInputTimeStart).Value
-    If Len(vTimeStart) > 0 Then
-        params.Add "start", vTimeStart
-    End If
-    vTimeEnd = ActiveSheet.Range(cellInputTimeEnd).Value
-    If Len(vTimeEnd) > 0 Then
-        params.Add "end", vTimeEnd
-    End If
-    sTimeType = ActiveSheet.Range(cellInputTimeType).Value
-    If Len(sTimeType) > 0 Then
-        params.Add "closetime", sTimeType
-    End If
-    iResultOffset = ActiveSheet.Range(cellInputResultOffset).Value
-    If Len(iResultOffset) > 0 Then
-        ' TODO: hmm, check is weird ...
-        params.Add "ofs", iResultOffset
     End If
 
     Set GatherInputParameters = params
 End Function
 
 Private Sub DisplaySingleRow(ByVal key As String, ByRef item As Variant, ByVal iRow As Integer)
-    Dim itemDescr As Variant
-
     ActiveSheet.Range("B" & iRow).Value = key
-    ActiveSheet.Range("C" & iRow).Value = item("refid")
-    ActiveSheet.Range("D" & iRow).Value = item("userref")
-    ActiveSheet.Range("E" & iRow).Value = item("status")
-    ActiveSheet.Range("F" & iRow).Value = item("reason")
-    ActiveSheet.Range("G" & iRow).Value = item("opentm")
-    ActiveSheet.Range("H" & iRow).Value = item("closetm")
-    ActiveSheet.Range("I" & iRow).Value = item("starttm")
-    ActiveSheet.Range("J" & iRow).Value = item("expiretm")
+    ActiveSheet.Range("C" & iRow).Value = item("ordertxid")
+    ActiveSheet.Range("D" & iRow).Value = item("postxid")
+    ActiveSheet.Range("E" & iRow).Value = item("pair")
+    ActiveSheet.Range("F" & iRow).Value = item("time")
+    ActiveSheet.Range("G" & iRow).Value = item("type")
+    ActiveSheet.Range("H" & iRow).Value = item("ordertype")
+    ActiveSheet.Range("I" & iRow).Value = item("price")
+    ActiveSheet.Range("J" & iRow).Value = item("cost")
+    ActiveSheet.Range("K" & iRow).Value = item("fee")
+    ActiveSheet.Range("L" & iRow).Value = item("vol")
+    ActiveSheet.Range("M" & iRow).Value = item("margin")
+    ActiveSheet.Range("N" & iRow).Value = item("misc")
 
-    Set itemDescr = item("descr")
-    ActiveSheet.Range("K" & iRow).Value = itemDescr("pair")
-    ActiveSheet.Range("L" & iRow).Value = itemDescr("type")
-    ActiveSheet.Range("M" & iRow).Value = itemDescr("ordertype")
-    ActiveSheet.Range("N" & iRow).Value = itemDescr("price")
-    ActiveSheet.Range("O" & iRow).Value = itemDescr("price2")
-    ActiveSheet.Range("P" & iRow).Value = itemDescr("leverage")
-    ActiveSheet.Range("Q" & iRow).Value = itemDescr("order")
-    ActiveSheet.Range("R" & iRow).Value = itemDescr("close")
-
-    ActiveSheet.Range("S" & iRow).Value = item("vol")
-    ActiveSheet.Range("T" & iRow).Value = item("vol_exec")
-    ActiveSheet.Range("U" & iRow).Value = item("cost")
-    ActiveSheet.Range("V" & iRow).Value = item("fee")
-    ActiveSheet.Range("W" & iRow).Value = item("price")
-    ActiveSheet.Range("X" & iRow).Value = item("stopprice")
-    ActiveSheet.Range("Y" & iRow).Value = item("limitprice")
-    ActiveSheet.Range("Z" & iRow).Value = item("misc")
-    ActiveSheet.Range("AA" & iRow).Value = item("oflags")
-
-    If item.Exists("trades") Then
-        Set itemDescr = item("trades")
-        ActiveSheet.Range("AB" & iRow).Value = ""
-    End If
+    ActiveSheet.Range("O" & iRow).Value = item("posstatus")
+    ActiveSheet.Range("P" & iRow).Value = item("cprice")
+    ActiveSheet.Range("Q" & iRow).Value = item("ccost")
+    ActiveSheet.Range("R" & iRow).Value = item("cfee")
+    ActiveSheet.Range("S" & iRow).Value = item("cvol")
+    ActiveSheet.Range("T" & iRow).Value = item("cmargin")
+    ActiveSheet.Range("U" & iRow).Value = item("net")
+    ActiveSheet.Range("V" & iRow).Value = item("trades")
 End Sub
 
-Private Sub DoGetClosedOrders()
+Private Sub DoGetQueryTradesInfo()
     Dim creds As Dictionary
     Dim method As String
     Dim params As Dictionary
-    Dim iResultOffset As Integer
     Dim result As Variant, errJson As Variant
     Dim i As Integer, curOffset As Integer
     Dim arrKeys() As Variant, key As String, item As Variant
-    Dim numResultsTotal, numResultsReturned, numResultsOffset As Integer
 
     ' load credentials
     Set creds = LoadCredentials()
@@ -151,7 +112,7 @@ Private Sub DoGetClosedOrders()
     End If
 
     ' prepare params
-    method = "ClosedOrders"
+    method = "QueryTrades"
 
     ' gather inputs
     Set params = GatherInputParameters()
@@ -174,18 +135,7 @@ Private Sub DoGetClosedOrders()
 
     ' process results
     Set result = result("result")
-
-    numResultsTotal = result("count")
-    Debug.Print "Number of results:", numResultsTotal
-    ActiveSheet.Range(cellOutputNumResultsTotal).Value = numResultsTotal
-
-    Set result = result("closed")
     arrKeys = result.Keys
-
-    ' just shove new offset into input mask ...
-    iResultOffset = ActiveSheet.Range(cellInputResultOffset).Value
-    numResultsReturned = iResultOffset + UBound(arrKeys) + 1
-    ActiveSheet.Range(cellInputResultOffset).Value = numResultsReturned
 
     ' output rows
     For i = 0 To UBound(arrKeys)
@@ -202,7 +152,6 @@ End Sub
 Private Sub DoClear()
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
-    ActiveSheet.Range(cellOutputNumResultsTotal).ClearContents
 End Sub
 
 ' #############################################################################
@@ -213,10 +162,10 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then
-        Debug.Print "Get Closed Order ..."
+        Debug.Print "Get Query TradesInfo ..."
         Application.ScreenUpdating = False
         On Error Resume Next
-        DoGetClosedOrders
+        DoGetQueryTradesInfo
         Application.ScreenUpdating = True
     ElseIf cellLinkClearBtn = cellName Then
         Application.ScreenUpdating = False
@@ -228,3 +177,4 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
 End Sub
 
 ' #############################################################################
+

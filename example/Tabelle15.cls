@@ -19,6 +19,7 @@ Private Const cellInputTrades As String = "D13"
 Private Const cellInputTimeStart As String = "D14"
 Private Const cellInputTimeEnd As String = "D15"
 Private Const cellInputResultOffset As String = "D16"
+Private Const cellOutputNumResultsTotal As String = "E19"
 Private Const cellLinkButton As String = "B18"
 Private Const cellLinkClearBtn As String = "B19"
 Private Const cellOutputErrMsg As String = "D18"
@@ -157,6 +158,7 @@ Private Sub DoGetTradesHistory()
 
     numResultsTotal = result("count")
     Debug.Print "Number of results:", numResultsTotal
+    ActiveSheet.Range(cellOutputNumResultsTotal).Value = numResultsTotal
 
     Set result = result("trades")
     arrKeys = result.Keys
@@ -181,6 +183,7 @@ End Sub
 Private Sub DoClear()
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
+    ActiveSheet.Range(cellOutputNumResultsTotal).ClearContents
 End Sub
 
 ' #############################################################################
