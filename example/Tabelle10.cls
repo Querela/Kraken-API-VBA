@@ -15,6 +15,7 @@ Private Const cellInputCredsKey As String = "D5"
 Private Const cellInputCredsSecret As String = "D6"
 Private Const cellInputCredsFilepath As String = "D8"
 Private Const cellLinkButton As String = "B12"
+Private Const cellLinkClearBtn As String = "B13"
 Private Const cellOutputErrMsg As String = "D12"
 Private Const offsetTopResults As Integer = 16
 Private Const rangeResultsToClear As String = "B16:C40"
@@ -98,6 +99,10 @@ Private Sub DoGetAccountBalance()
     Next
 End Sub
 
+Private Sub DoClear()
+    ' TODO: Q'n'D clearing ...
+    ActiveSheet.Range(rangeResultsToClear).ClearContents
+End Sub
 
 ' #############################################################################
 ' 'Official' event handlers
@@ -112,6 +117,11 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
         Application.ScreenUpdating = False
         On Error Resume Next
         DoGetAccountBalance
+        Application.ScreenUpdating = True
+    ElseIf cellLinkClearBtn = cellName Then
+        Application.ScreenUpdating = False
+        On Error Resume Next
+        DoClear
         Application.ScreenUpdating = True
     End If
 

@@ -17,6 +17,7 @@ Private Const cellInputCredsFilepath As String = "D8"
 Private Const cellInputAssetClass As String = "D12"
 Private Const cellInputAsset As String = "D13"
 Private Const cellLinkButton As String = "B15"
+Private Const cellLinkClearBtn As String = "B16"
 Private Const cellOutputErrMsg As String = "D15"
 Private Const offsetTopResults As Integer = 19
 Private Const rangeResultsToClear As String = "B19:B26"  ' "B19:B27"
@@ -54,11 +55,26 @@ Private Function LoadCredentials() As Dictionary
     Set LoadCredentials = creds
 End Function
 
+Private Function GatherInputParameters() As Dictionary
+    Dim params As New Dictionary
+    Dim sAssetClass, sAsset As String
+
+    sAssetClass = ActiveSheet.Range(cellInputAssetClass).Value
+    If Len(sAssetClass) > 0 Then
+        params.Add "aclass", sAssetClass
+    End If
+    sAsset = ActiveSheet.Range(cellInputAsset).Value
+    If Len(sAsset) > 0 Then
+        params.Add "asset", sAsset
+    End If
+
+    Set GatherInputParameters = params
+End Function
+
 Private Sub DoGetTradeBalance()
     Dim creds As Dictionary
     Dim method As String
     Dim params As New Dictionary
-    Dim sAssetClass, sAsset As String
     Dim result As Variant, errJson As Variant
     'Dim i As Integer, curOffset As Integer
     'Dim arrKeys() As Variant, key As String, sValue As String
@@ -72,15 +88,8 @@ Private Sub DoGetTradeBalance()
     ' prepare params
     method = "TradeBalance"
 
-    ' Check if assetpair given
-    sAssetClass = ActiveSheet.Range(cellInputAssetClass).Value
-    If Len(sAssetClass) > 0 Then
-        params.Add "aclass", sAssetClass
-    End If
-    sAsset = ActiveSheet.Range(cellInputAsset).Value
-    If Len(sAsset) > 0 Then
-        params.Add "asset", sAsset
-    End If
+    ' gather input
+    Set params = GatherInputParameters()
 
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method, params)
@@ -122,6 +131,10 @@ Private Sub DoGetTradeBalance()
     'ActiveSheet.Range("B" & (offsetTopResults + 8)).Value = result("ml")
 End Sub
 
+Private Sub DoClear()
+    ' TODO: Q'n'D clearing ...
+    ActiveSheet.Range(rangeResultsToClear).ClearContents
+End Sub
 
 ' #############################################################################
 ' 'Official' event handlers
@@ -135,6 +148,11 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
         Application.ScreenUpdating = False
         On Error Resume Next
         DoGetTradeBalance
+        Application.ScreenUpdating = True
+    ElseIf cellLinkClearBtn = cellName Then
+        Application.ScreenUpdating = False
+        On Error Resume Next
+        DoClear
         Application.ScreenUpdating = True
     End If
 

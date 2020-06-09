@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "Tabelle12"
+Attribute VB_Name = "Tabelle14"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -16,11 +16,12 @@ Private Const cellInputCredsSecret As String = "D6"
 Private Const cellInputCredsFilepath As String = "D8"
 Private Const cellInputTrades As String = "D12"
 Private Const cellInputUserref As String = "D13"
-Private Const cellLinkButton As String = "B15"
-Private Const cellLinkClearBtn As String = "B16"
-Private Const cellOutputErrMsg As String = "D15"
-Private Const offsetTopResults As Integer = 19
-Private Const rangeResultsToClear As String = "B19:Z118"
+Private Const cellInputTXIDs As String = "D14"
+Private Const cellLinkButton As String = "B16"
+Private Const cellLinkClearBtn As String = "B17"
+Private Const cellOutputErrMsg As String = "D16"
+Private Const offsetTopResults As Integer = 20
+Private Const rangeResultsToClear As String = "B20:AB69"
 
 ' #############################################################################
 
@@ -57,7 +58,7 @@ End Function
 
 Private Function GatherInputParameters() As Dictionary
     Dim params As New Dictionary
-    Dim sTrades, sUserref As String
+    Dim sTrades, sUserref As String, sTXIDs As String
 
     sTrades = ActiveSheet.Range(cellInputTrades).Value
     If Len(sTrades) > 0 Then
@@ -66,6 +67,10 @@ Private Function GatherInputParameters() As Dictionary
     sUserref = ActiveSheet.Range(cellInputUserref).Value
     If Len(sUserref) > 0 Then
         params.Add "userref", sUserref
+    End If
+    sTXIDs = ActiveSheet.Range(cellInputTXIDs).Value
+    If Len(sTXIDs) > 0 Then
+        params.Add "txid", sTXIDs
     End If
 
     Set GatherInputParameters = params
@@ -78,43 +83,47 @@ Private Sub DisplaySingleRow(ByVal key As String, ByRef item As Variant, ByVal i
     ActiveSheet.Range("C" & iRow).Value = item("refid")
     ActiveSheet.Range("D" & iRow).Value = item("userref")
     ActiveSheet.Range("E" & iRow).Value = item("status")
-    ActiveSheet.Range("F" & iRow).Value = item("opentm")
-    ActiveSheet.Range("G" & iRow).Value = item("starttm")
-    ActiveSheet.Range("H" & iRow).Value = item("expiretm")
+    ActiveSheet.Range("F" & iRow).Value = item("reason")
+    ActiveSheet.Range("G" & iRow).Value = item("opentm")
+    ActiveSheet.Range("H" & iRow).Value = item("closetm")
+    ActiveSheet.Range("I" & iRow).Value = item("starttm")
+    ActiveSheet.Range("J" & iRow).Value = item("expiretm")
 
     Set itemDescr = item("descr")
-    ActiveSheet.Range("I" & iRow).Value = itemDescr("pair")
-    ActiveSheet.Range("J" & iRow).Value = itemDescr("type")
-    ActiveSheet.Range("K" & iRow).Value = itemDescr("ordertype")
-    ActiveSheet.Range("L" & iRow).Value = itemDescr("price")
-    ActiveSheet.Range("M" & iRow).Value = itemDescr("price2")
-    ActiveSheet.Range("N" & iRow).Value = itemDescr("leverage")
-    ActiveSheet.Range("O" & iRow).Value = itemDescr("order")
-    ActiveSheet.Range("P" & iRow).Value = itemDescr("close")
+    ActiveSheet.Range("K" & iRow).Value = itemDescr("pair")
+    ActiveSheet.Range("L" & iRow).Value = itemDescr("type")
+    ActiveSheet.Range("M" & iRow).Value = itemDescr("ordertype")
+    ActiveSheet.Range("N" & iRow).Value = itemDescr("price")
+    ActiveSheet.Range("O" & iRow).Value = itemDescr("price2")
+    ActiveSheet.Range("P" & iRow).Value = itemDescr("leverage")
+    ActiveSheet.Range("Q" & iRow).Value = itemDescr("order")
+    ActiveSheet.Range("R" & iRow).Value = itemDescr("close")
 
-    ActiveSheet.Range("Q" & iRow).Value = item("vol")
-    ActiveSheet.Range("R" & iRow).Value = item("vol_exec")
-    ActiveSheet.Range("S" & iRow).Value = item("cost")
-    ActiveSheet.Range("T" & iRow).Value = item("fee")
-    ActiveSheet.Range("U" & iRow).Value = item("price")
-    ActiveSheet.Range("V" & iRow).Value = item("stopprice")
-    ActiveSheet.Range("W" & iRow).Value = item("limitprice")
-    ActiveSheet.Range("X" & iRow).Value = item("misc")
-    ActiveSheet.Range("Y" & iRow).Value = item("oflags")
+    ActiveSheet.Range("S" & iRow).Value = item("vol")
+    ActiveSheet.Range("T" & iRow).Value = item("vol_exec")
+    ActiveSheet.Range("U" & iRow).Value = item("cost")
+    ActiveSheet.Range("V" & iRow).Value = item("fee")
+    ActiveSheet.Range("W" & iRow).Value = item("price")
+    ActiveSheet.Range("X" & iRow).Value = item("stopprice")
+    ActiveSheet.Range("Y" & iRow).Value = item("limitprice")
+    ActiveSheet.Range("Z" & iRow).Value = item("misc")
+    ActiveSheet.Range("AA" & iRow).Value = item("oflags")
 
     If item.Exists("trades") Then
         Set itemDescr = item("trades")
-        ActiveSheet.Range("Z" & iRow).Value = ""
+        ActiveSheet.Range("AB" & iRow).Value = ""
     End If
 End Sub
 
-Private Sub DoGetOpenOrders()
+Private Sub DoGetQueryOrdersInfo()
     Dim creds As Dictionary
     Dim method As String
     Dim params As Dictionary
+    Dim iResultOffset As Integer
     Dim result As Variant, errJson As Variant
     Dim i As Integer, curOffset As Integer
     Dim arrKeys() As Variant, key As String, item As Variant
+    Dim numResultsTotal, numResultsReturned, numResultsOffset As Integer
 
     ' load credentials
     Set creds = LoadCredentials()
@@ -124,16 +133,16 @@ Private Sub DoGetOpenOrders()
     End If
 
     ' prepare params
-    method = "OpenOrders"
+    method = "QueryOrders"
 
-    ' gather input
+    ' gather inputs
     Set params = GatherInputParameters()
 
     ' query public API, receive JSON structure
     Set result = API.KrakenQueryPrivate(creds("key"), creds("secret"), method, params)
     Debug.Print method, WebUtils.BeautifyJson(result)
 
-    ' check & handle errors
+    ' check and handle errors
     errJson = result("error")
     If Not IsEmpty(errJson) Then
         ActiveSheet.Range(cellOutputErrMsg).Value = errJson(0)
@@ -145,10 +154,11 @@ Private Sub DoGetOpenOrders()
     ' TODO: Q'n'D clearing ...
     ActiveSheet.Range(rangeResultsToClear).ClearContents
 
+    ' process results
     Set result = result("result")
-    Set result = result("open")
     arrKeys = result.Keys
 
+    ' output rows
     For i = 0 To UBound(arrKeys)
         If i Mod 10 = 0 Then VBA.DoEvents
 
@@ -173,10 +183,10 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
     cellName = ExcelUtils.ColumnName(Target.Range.Column) & Target.Range.Row
 
     If cellLinkButton = cellName Then
-        Debug.Print "Get Open Order ..."
+        Debug.Print "Get Query OrdersInfo ..."
         Application.ScreenUpdating = False
         On Error Resume Next
-        DoGetOpenOrders
+        DoGetQueryOrdersInfo
         Application.ScreenUpdating = True
     ElseIf cellLinkClearBtn = cellName Then
         Application.ScreenUpdating = False
@@ -188,3 +198,4 @@ Private Sub Worksheet_FollowHyperlink(ByVal Target As Hyperlink)
 End Sub
 
 ' #############################################################################
+
