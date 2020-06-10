@@ -21,10 +21,10 @@ Permissions vs. API method
 | Deposit Funds | [DepositMethods](https://www.kraken.com/features/api#deposit-methods) | * |
 | | [DepositAddresses](https://www.kraken.com/features/api#deposit-addresses) | * |
 | ? | [DepositStatus](https://www.kraken.com/features/api#deposit-status) **???** | * |
-| Withdraw Funds | [WithdrawInfo](https://www.kraken.com/features/api#get-withdrawal-info) | |
+| Withdraw Funds | [WithdrawInfo](https://www.kraken.com/features/api#get-withdrawal-info) | * |
 | | [Withdraw](https://www.kraken.com/features/api#withdraw-funds) | |
 | | [WithdrawCancel](https://www.kraken.com/features/api#withdraw-cancel) | |
-| ? | [WithdrawStatus](https://www.kraken.com/features/api#withdraw-status) **???** | |
+| ? | [WithdrawStatus](https://www.kraken.com/features/api#withdraw-status) **???** | * |
 | ? | [WalletTransfer](https://www.kraken.com/features/api#wallet-transfer) **???** | |
 
 ### Orders & Trades
@@ -54,6 +54,6 @@ Permissions vs. API method
 | ---------- | ---------- | -------------- |
 | Export Data | [AddExport](https://www.kraken.com/features/api#add-history-export) | |
 | | [RetrieveExport](https://www.kraken.com/features/api#get-history-export) | |
-| | [ExportStatus](https://www.kraken.com/features/api#get-export-statuses) | |
+| | [ExportStatus](https://www.kraken.com/features/api#get-export-statuses) | * |
 | | [RemoveExport](https://www.kraken.com/features/api#remove-history-export) | |
 
