@@ -1,5 +1,5 @@
-API-Keys
-========
+Private API
+===========
 
 Links
 -----
