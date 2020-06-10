@@ -5,6 +5,8 @@ Links
 -----
 
 - [how to generate a new key & what permission is used for what method](https://support.kraken.com/hc/en-us/articles/360000919966-How-to-generate-an-API-key-pair-)
+- [What is a nonce windows?](https://support.kraken.com/hc/en-us/articles/360001148023-What-is-a-Nonce-Window-)
+- [What is a nonce?](https://support.kraken.com/hc/en-us/articles/360000906023-What-is-a-nonce-)
 
 Permissions vs. API method
 --------------------------
