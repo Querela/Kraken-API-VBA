@@ -3,11 +3,11 @@ Examples
 
 Contains example Excel file(s) using Macros (`*.xslm`) to demonstrate how to use the **Kraken.com API** VBA modules.
 
-Currently, the [**public API**](https://www.kraken.com/features/api#public-market-data) is completely covered.  
+Currently, the [**public API**](https://www.kraken.com/features/api#public-market-data) is completely covered. -- [***Public-API.md***](https://github.com/Querela/Kraken-API-VBA/blob/master/example/Public-API.md)  
 I have exported each sheet modul (`Tabelle1-9`) for easier viewing,
 but they are *bound* to the Excel file/structure because of how the input and output is being realised.
 
-The [**private API**](https://www.kraken.com/features/api#private-user-data) is work in progress.  
+The [**private API**](https://www.kraken.com/features/api#private-user-data) is work in progress. -- [***Private-API.md***](https://github.com/Querela/Kraken-API-VBA/blob/master/example/Private-API.md)  
 Currently, the best way to load the Kraken API credentials (key & secret) is using a local `kraken.key` file in the same folder as the Excel file. This is subject to change, and not hard-coded.  
 
 - [Private user data](https://www.kraken.com/features/api#private-user-data) is more or less completely covered (see `Tabelle10-20`). I intentionally excluded examples for exports.
