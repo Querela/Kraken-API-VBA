@@ -23,6 +23,7 @@ Test code (not required):
 Example Use-Case(s):
 
 - `example/` folder (with [example Excel file](https://github.com/Querela/Kraken-API-VBA/raw/master/example/Kraken.xlsm))
+- see [examples README.md](https://github.com/Querela/Kraken-API-VBA/blob/master/example/README.md), [*Public-API.md*](https://github.com/Querela/Kraken-API-VBA/blob/master/example/Public-API.md), [*Private-API.md*](https://github.com/Querela/Kraken-API-VBA/blob/master/example/Private-API.md)
 
 
 Usage
