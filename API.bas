@@ -65,7 +65,7 @@ End Function
 
 Public Function nonce() As String
     ' time in seconds
-    nonce = CStr((Now() - 25569) * 86400 * 1000)
+    nonce = CStr((Now() - 25569) * 86400)
 End Function
 
 Public Function nonce_2() As String
@@ -132,7 +132,7 @@ End Function
 'Private Function KrakenQueryBase(urlpath, data, headers) As String
 'End Function
 
-Public Function KrakenQueryPublic(ByVal sMethod As String, Optional ByVal params As Object = Nothing) As Variant
+Public Function KrakenQueryPublic(ByVal sMethod As String, Optional ByRef params As Object = Nothing) As Variant
     Dim uri As String, urlpath As String, queryString As String
     Dim strJsonString As String
     Dim varJson As Variant
@@ -217,7 +217,7 @@ Public Function KrakenQueryPrivate(ByVal sKey As String, ByVal sSecret As String
     ' get result item if not error?
     errJson = varJson("error")
     If Not IsEmpty(errJson) Then
-        Debug.Assert -1 = UBound(errJson)
+        'Debug.Assert -1 = UBound(errJson)
         If UBound(errJson) >= 0 Then
             Debug.Print "Errors for """ & urlpath & """:"
             For i = 0 To UBound(errJson)
@@ -281,6 +281,9 @@ End Function
 ' https://www.extendoffice.com/documents/excel/2473-excel-timestamp-to-date.html
 ' https://www.contextures.com/xlDataVal01.html#create
 ' https://www.mrexcel.com/board/threads/how-to-get-unix-timestamp-in-milliseconds-vba.973463/
+
+' https://p2p.wrox.com/vbscript/29099-unicode-utf-8-system-text-utf8encoding-vba.html
+' http://www.vbforums.com/showthread.php?559398-Byte-array-to-hex-string
 '
 
 ' #############################################################################

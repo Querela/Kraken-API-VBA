@@ -62,6 +62,15 @@ Public Function ToBytes(ByVal data As Variant) As Byte()
     Set Encoder = Nothing
 End Function
 
+Public Function FromBytes(ByRef bData() As Byte) As String
+    Dim Decoder As Object
+    Set Decoder = CreateObject("System.Text.UTF8Encoding")
+
+    FromBytes = Decoder.GetString(bData)
+
+    Set Decoder = Nothing
+End Function
+
 Public Function ByteConcat(ByRef bArr1() As Byte, ByRef bArr2() As Byte) As Byte()
     Dim i As Long
     Dim bArrOut() As Byte
@@ -74,6 +83,18 @@ Public Function ByteConcat(ByRef bArr1() As Byte, ByRef bArr2() As Byte) As Byte
     Next
 
     ByteConcat = bArrOut
+End Function
+
+Public Function BytesHexString(ByRef bData() As Byte) As String
+    ' From: http://www.vbforums.com/showthread.php?559398-Byte-array-to-hex-string
+    Dim i As Long, sHex As String
+
+    For i = LBound(bData) To UBound(bData)
+        sHex = sHex & Hex$(bData(i)) & " "
+    Next
+
+    'Remove last space at end.
+    BytesHexString = Left$(sHex, Len(sHex) - 1)
 End Function
 
 ' #############################################################################

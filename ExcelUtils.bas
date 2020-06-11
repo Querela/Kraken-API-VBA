@@ -50,6 +50,10 @@ Public Function TimestampToExcel_2(ByVal timestamp As Long) As Variant
     TimestampToExcel_2 = VBA.DateSerial(1970, 1, 1) + (((CLng(timestamp) / 60) / 60) / 24)
 End Function
 
+Public Function DatetimeToTimestamp(ByVal datetime As Date) As Long
+    DatetimeToTimestamp = DateDiff("s", "01/01/1970", datetime) + Timer
+End Function
+
 ' #############################################################################
 
 ' #############################################################################
